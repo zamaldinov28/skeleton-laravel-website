@@ -1,0 +1,51 @@
+SHELL=/bin/bash
+
+# * * * * *  (user_name) (Command, that will be executed)
+# - - - - -
+# | | | | |
+# | | | | - Day of the week (0 - 7) (Sunday = 0 or 7)
+# | | | --- Month (1 - 12)
+# | | ----- Day of the month (1 - 31)
+# | ------- Hour (0 - 23)
+# --------- Minute (0 - 59)
+#
+#
+# @reboot	Выполнять при загрузке операционной системы	—
+# @yearly	Execute annually at midnight on January 1st		0 0 1 1 *
+# @annually	Execute annually at midnight on January 1st		0 0 1 1 *
+# @monthly	Execute monthly at midnight on the 1st day		0 0 1 * *
+# @weekly	Execute at midnight every Monday				0 0 * * 0
+# @daily	Execute daily at midnight						0 0 * * *
+# @midnight	Execute daily at midnight						0 0 * * *
+# @hourly	At the beginning of every hour					0 * * * *
+#
+#
+# */5 * * * *	echo «Launch cron task every 5 minutes»
+# 0 */3 * * *	echo «Launch cron task every 3 hours»
+# * * * * *		echo «Launch cron task every minute»
+# 0 * * * *		echo «Launch cron task every hour»
+# 0 9 * * *		echo «Launch cron task every day at 09:00»
+# 5 2 * * *		echo «Launch cron task every day at 2:05 am»
+# 0 0 * * *		echo «Launch cron task every day at midnight»
+# 0 0 * * 0		echo «Launch cron task every Sunday»
+# 0 0 * * 1		echo «Launch cron task every Monday»
+# 0 0 1 * *		echo «Launch cron task on the first day of each month»
+# 0 0 1 1 *		echo «Launch cron task every year of the first of January»
+#
+#
+# 9			Single value		Execute in 9am
+# 6,7,10	Multiple values		Execute in 6, 7 and 10am
+# 6-9		Range				Execute every hour between 6-9 am (inclusive)
+# */2		Fraction			Execute every 2nd hour, i.e. 0 (midnight), 2am, 4am, 6am, etc.
+# 3-12/3	Franction range		Execute every 3rd hour between 3AM and 12PM, i.e. 3am, 6am, 9am, 12pm
+#
+
+########################################################################################################################
+############################ Server timezone is UTC ####################################################################
+########################################################################################################################
+
+# Laravel tasks
+* * * * * cd /var/www/$PROJECT_CODE && php artisan schedule:run >> /var/log/cron.log 2>&1
+
+########################################################################################################################
+# empty string here

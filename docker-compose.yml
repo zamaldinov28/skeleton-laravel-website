@@ -1,0 +1,69 @@
+version: '3.0'
+services:
+
+  nginx:
+    build:
+      context: ./docker/nginx
+    ports:
+      - "${DOCKER_PORT_NGINX_HTTPS}:443"
+      - "${DOCKER_PORT_NGINX_HTTP}:80"
+    depends_on:
+      - php
+    volumes:
+      - ./docker/nginx/templates:/etc/nginx/templates
+      - ./docker/nginx/certs/:/etc/nginx/certs/
+      - ./docker/logs/nginx/:/var/log/nginx
+      - ./public/:/var/www/${DOCKER_PROJECT_CODE}/public/
+    environment:
+      PROJECT_CODE: ${DOCKER_PROJECT_CODE}
+    networks:
+      - project_network
+
+  php:
+    build:
+      context: ./docker/php
+      args:
+        UID: "${DOCKER_UID}"
+        GID: "${DOCKER_GID}"
+    entrypoint: /var/www/${DOCKER_PROJECT_CODE}/docker/php/entrypoint.sh
+    volumes:
+      - ./:/var/www/${DOCKER_PROJECT_CODE}/
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/logs/php/:/var/log
+      - ./docker/php/supervisord.conf:/etc/supervisord.conf
+      - ./docker/php/supervisor.d/:/etc/supervisor.d
+    environment:
+      PROJECT_CODE: ${DOCKER_PROJECT_CODE}
+    ports:
+      - "${DOCKER_PHP_PROFILER_SOCKET}:1901"
+    depends_on:
+      - mysql
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - project_network
+
+  mysql:
+    build:
+      context: ./docker/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - '${DOCKER_PORT_MYSQL}:3306'
+    volumes:
+      - ./docker/mysql/my.cnf:/etc/my.cnf
+      - ./docker/storages/mysql:/var/lib/mysql
+      - ./docker/logs/mysql:/var/log/mysql
+      - ./docker:/docker
+    environment:
+      PROJECT_CODE: ${DOCKER_PROJECT_CODE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    networks:
+      - project_network
+
+networks:
+  project_network:
+    name: ${DOCKER_PROJECT_CODE}_network
+    driver: bridge
