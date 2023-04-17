@@ -4,6 +4,8 @@
 
 Steps, that should be done, to run project on the local environment
 
+> _Note to replace `projectcode` with your project code. To prevent any problems, better to use just upper and lowercased letters_
+
 1. Clone repository locally
 2. Copy file `.env.example` to `.env` at the project root, and fill all the required values
 > _In some cases, it is also recommended to change the permissions for some files and directory:_
@@ -64,20 +66,6 @@ console.
 
 ## Saving some values in database
 
-### Finances
-
-All amounts are stored in the smallest fractional part according to the standard [ISO 4217](https://en.wikipedia.org/wiki/iso_4217). For example:
-| Value | Currency Code | Amount    |
-| ----- | ------------- | --------- |
-| 500   | USD           | $5.00     |
-| 500   | JPY           | ¥500      |
-| 500   | UAH           | 5.00 грн. |
-| 500   | KWD           | ½ KD      |
-
-For the simplicity of operations, the `moneyphp/money` package has been added, and the `\App\Components\Money.php` component was created.
-
-All financial transactions in the code do taking into account the possibility of the currency difference.
-
 ### Date and time
 
 For all dates and time values, use the date/datetime types and the UTC timezone (except for some cases when necessary). Fields `created_at` and `updated_at` should be created in this way:
@@ -95,7 +83,7 @@ $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
 With model generation remove `created_at` and `updated_at` from the
 `$fillable` variable. **Do not change this values in the code!**
 
-## Оформление кода
+## Code style
 
 Mostly code should be formatted according to the [PSR-12](https://gist.github.com/zamaldinov28/77674c05345db6ae1977ba575306bfb5).
 
