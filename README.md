@@ -41,11 +41,14 @@ Steps, that should be done, to run project on the local environment
     server {
         listen 443 ssl;
         listen [::]:443 ssl;
-        ssl_certificate /etc/nginx/certs/_wildcard.projectcode.local.pem;
-        ssl_certificate_key /etc/nginx/certs/_wildcard.projectcode.local-key.pem;
+        ssl_certificate /etc/nginx/certs/projectcode.local.pem;
+        ssl_certificate_key /etc/nginx/certs/projectcode.local-key.pem;
 
-        server_name projectcode.local admin.projectcode.local static.projectcode.local profiler.projectcode.local;
+        server_name projectcode.local;
         location / {
+            proxy_read_timeout 1d;
+            proxy_connect_timeout 1d;
+            proxy_send_timeout 1d;
             proxy_set_header   Host $http_host;
             proxy_set_header   X-Real-IP $remote_addr;
             proxy_set_header   X-Forwarded-For $remote_addr;
@@ -54,6 +57,24 @@ Steps, that should be done, to run project on the local environment
             proxy_ssl_certificate_key /path/to/project/docker/nginx/certs/projectcode-key.pem;
         }
     }
+
+    server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        ssl_certificate /etc/nginx/certs/_wildcard.projectcode.local.pem;
+        ssl_certificate_key /etc/nginx/certs/_wildcard.projectcode.local-key.pem;
+
+        server_name admin.projectcode.local profiler.projectcode.local static.projectcode.local;
+        location / {
+            proxy_set_header   Host $http_host;
+            proxy_set_header   X-Real-IP $remote_addr;
+            proxy_set_header   X-Forwarded-For $remote_addr;
+            proxy_pass         "https://admin.projectcode.local:443";
+            proxy_ssl_certificate /path/to/project/docker/nginx/certs/_wildcard.projectcode.pem;
+            proxy_ssl_certificate_key /path/to/project/docker/nginx/certs/_wildcard.projectcode-key.pem;
+        }
+    }
+
 	```
 12. Go to https://projectcode.local/
 
