@@ -39,8 +39,8 @@ Steps, that should be done, to run project on the local environment
     If necessary, enable the website (if the saving was in a separate file)
 	```
     server {
-        listen 443 ssl;
-        listen [::]:443 ssl;
+        listen 443 ssl http2;
+        listen [::]:443 ssl http2;
         ssl_certificate /etc/nginx/certs/projectcode.local.pem;
         ssl_certificate_key /etc/nginx/certs/projectcode.local-key.pem;
 
@@ -59,8 +59,8 @@ Steps, that should be done, to run project on the local environment
     }
 
     server {
-        listen 443 ssl;
-        listen [::]:443 ssl;
+        listen 443 ssl http2;
+        listen [::]:443 ssl http2;
         ssl_certificate /etc/nginx/certs/_wildcard.projectcode.local.pem;
         ssl_certificate_key /etc/nginx/certs/_wildcard.projectcode.local-key.pem;
 

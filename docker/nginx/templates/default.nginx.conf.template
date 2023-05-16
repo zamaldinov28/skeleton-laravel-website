@@ -1,8 +1,8 @@
 server {
     charset utf-8;
 
-    listen 443 ssl;
-    listen [::]:443 ssl;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
     ssl_certificate /etc/nginx/certs/${PROJECT_CODE}.pem;
     ssl_certificate_key /etc/nginx/certs/${PROJECT_CODE}-key.pem;
 
@@ -41,8 +41,8 @@ server {
 server {
     charset utf-8;
 
-    listen 443 ssl;
-    listen [::]:443 ssl;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
     ssl_certificate /etc/nginx/certs/_wildcard.${PROJECT_CODE}.pem;
     ssl_certificate_key /etc/nginx/certs/_wildcard.${PROJECT_CODE}-key.pem;
 
@@ -60,6 +60,8 @@ server {
     index index.php;
 
     location / {
+        add_header 'Access-Control-Allow-Origin' '*.${PROJECT_CODE}.local' always;
+
         try_files $uri $uri/ /index.php?$query_string;
     }
 
