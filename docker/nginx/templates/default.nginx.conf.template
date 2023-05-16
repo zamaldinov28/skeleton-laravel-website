@@ -6,7 +6,7 @@ server {
     ssl_certificate /etc/nginx/certs/${PROJECT_CODE}.pem;
     ssl_certificate_key /etc/nginx/certs/${PROJECT_CODE}-key.pem;
 
-    server_name ${PROJECT_CODE}.local admin.${PROJECT_CODE}.local static.${PROJECT_CODE}.local;
+    server_name ${PROJECT_CODE}.local;
 
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
@@ -43,8 +43,48 @@ server {
 
     listen 443 ssl;
     listen [::]:443 ssl;
-    ssl_certificate /etc/nginx/certs/${PROJECT_CODE}.pem;
-    ssl_certificate_key /etc/nginx/certs/${PROJECT_CODE}-key.pem;
+    ssl_certificate /etc/nginx/certs/_wildcard.${PROJECT_CODE}.pem;
+    ssl_certificate_key /etc/nginx/certs/_wildcard.${PROJECT_CODE}-key.pem;
+
+    server_name admin.${PROJECT_CODE}.local static.${PROJECT_CODE}.local;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    root /var/www/${PROJECT_CODE}/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico {
+        access_log off; log_not_found off;
+    }
+    location = /robots.txt {
+        access_log off; log_not_found off;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass php:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+
+server {
+    charset utf-8;
+
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    ssl_certificate /etc/nginx/certs/_wildcard.${PROJECT_CODE}.pem;
+    ssl_certificate_key /etc/nginx/certs/_wildcard.${PROJECT_CODE}-key.pem;
 
     server_name profiler.${PROJECT_CODE}.local;
 
@@ -63,8 +103,8 @@ server {
 server {
     listen 443 ssl default_server;
     listen [::]:443 ssl;
-    ssl_certificate /etc/nginx/certs/${PROJECT_CODE}.pem;
-    ssl_certificate_key /etc/nginx/certs/${PROJECT_CODE}-key.pem;
+    ssl_certificate /etc/nginx/certs/_wildcard.${PROJECT_CODE}.pem;
+    ssl_certificate_key /etc/nginx/certs/_wildcard.${PROJECT_CODE}-key.pem;
 
     return 404;
 }

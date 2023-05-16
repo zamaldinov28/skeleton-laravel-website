@@ -21,7 +21,6 @@ Steps, that should be done, to run project on the local environment
 7. Set key values
     ```sh
     php artisan key:generate
-    php artisan jwt:secret -f
     ```
 8. On your host append to the hosts file:
 	```
